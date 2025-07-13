@@ -24,4 +24,8 @@ impl SineOscillator {
         }
         sample
     }
+
+    pub fn set_frequency(&mut self, frequency: f32) {
+        self.frequency = frequency;
+    }    
 }

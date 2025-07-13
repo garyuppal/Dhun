@@ -20,4 +20,9 @@ impl SineOscillator {
     pub fn next_sample(&mut self) -> f32 {
         self.inner.next_sample()
     }
+
+    #[wasm_bindgen]
+    pub fn set_frequency(&mut self, frequency: f32) {
+        self.inner.set_frequency(frequency);
+    }
 }
