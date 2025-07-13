@@ -1,14 +1,31 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use wasm_bindgen::prelude::*;
+use std::f32::consts::PI;
+
+#[wasm_bindgen]
+pub struct SineOscillator {
+    phase: f32,
+    frequency: f32,
+    sample_rate: f32,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+#[wasm_bindgen]
+impl SineOscillator {
+    #[wasm_bindgen(constructor)]
+    pub fn new(sample_rate: f32, frequency: f32) -> SineOscillator {
+        SineOscillator {
+            phase: 0.0,
+            frequency,
+            sample_rate,
+        }
+    }
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    #[wasm_bindgen]
+    pub fn next_sample(&mut self) -> f32 {
+        let sample = (2.0 * PI * self.phase).sin();
+        self.phase += self.frequency / self.sample_rate;
+        if self.phase >= 1.0 {
+            self.phase -= 1.0;
+        }
+        sample
     }
 }

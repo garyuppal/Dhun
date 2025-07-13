@@ -1,14 +1,35 @@
-import { createSignal } from "solid-js";
+// import { createSignal } from "solid-js";
+import init, { SineOscillator } from "../public/pkg/dsp_engine";
+
 
 function App() {
-  const playMiddleC = () => {
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioCtx.createOscillator();
-    oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(261.63, audioCtx.currentTime); // Middle C
-    oscillator.connect(audioCtx.destination);
-    oscillator.start();
-    oscillator.stop(audioCtx.currentTime + 1); // 1 second
+  // const playMiddleC = () => {
+  //   const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  //   const oscillator = audioCtx.createOscillator();
+  //   oscillator.type = "sine";
+  //   oscillator.frequency.setValueAtTime(261.63, audioCtx.currentTime); // Middle C
+  //   oscillator.connect(audioCtx.destination);
+  //   oscillator.start();
+  //   oscillator.stop(audioCtx.currentTime + 1); // 1 second
+  // };
+  
+  const playMiddleC = async () => {
+    await init(); // Load the Wasm module
+
+    const audioCtx = new AudioContext();
+    const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    const osc = new SineOscillator(audioCtx.sampleRate, 261.63);
+
+    for (let i = 0; i < data.length; i++) {
+      data[i] = osc.next_sample();
+    }
+
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioCtx.destination);
+    source.start();
   };
 
   const playAboveC = () => {
